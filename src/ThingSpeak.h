@@ -54,7 +54,7 @@
 //#define PRINT_HTTP
 
 
-#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAM)
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_SAMD) || defined(ARDUINO_ARCH_SAM)
   #include "Arduino.h"
   #include <Client.h>
 #else
@@ -72,6 +72,8 @@
     #else
         #define TS_USER_AGENT "tslib-arduino/1.3 (arduino uno or mega)"
     #endif
+#elif defined(ARDUINO_ARCH_ESP32)
+	#define TS_USER_AGENT "tslib-arduino/1.3 (ESP32)"
 #elif defined(ARDUINO_ARCH_ESP8266)
     #define TS_USER_AGENT "tslib-arduino/1.3 (ESP8266)"
 #elif defined(ARDUINO_SAMD_MKR1000)
@@ -113,7 +115,7 @@ class ThingSpeakClass
 		resetWriteFields();
 	    this->lastReadStatus = OK_SUCCESS;
 	};
-
+	/* 初期設定 */
 	/**
 	 * @brief Initializes the ThingSpeak library and network settings using a custom installation of ThingSpeak.
 	 * @param client EthernetClient, YunClient, TCPClient, or WiFiClient created earlier in the sketch
@@ -210,7 +212,7 @@ class ThingSpeakClass
 		this->lastReadStatus = OK_SUCCESS;
 		return true;
 	};
-	
+	/* 1つのデータを送信 */
 	/**
 	 * @brief Write an integer value to a single field in a ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -350,7 +352,7 @@ class ThingSpeakClass
 		return writeRaw(channelNumber, postMessage, writeAPIKey);
  	};
 
-    
+	/* まとめてデータを送信するためにデータを貯める */
 	/**
 	 * @brief Set the value of a single field that will be part of a multi-field update.
 	 * To write multiple fields at once, call setField() for each of the fields you want to write, and then call writeFields()
@@ -550,7 +552,7 @@ class ThingSpeakClass
 		return OK_SUCCESS;
 	};
 
-
+	/* GPS座標を設定 */
 	/**
 	 * @brief Set the latitude of a multi-field update.
 	 * To record latitude, longitude and elevation of a write, call setField() for each of the fields you want to write, setLatitude() / setLongitude() / setElevation(), and then call writeFields()
@@ -636,7 +638,7 @@ class ThingSpeakClass
 		return OK_SUCCESS;
 	};
 
-
+	/* 高度設定 */
 	/**
 	 * @brief Set the elevation of a multi-field update.
 	 * To record latitude, longitude and elevation of a write, call setField() for each of the fields you want to write, setLatitude() / setLongitude() / setElevation(), and then call writeFields()
@@ -678,7 +680,7 @@ class ThingSpeakClass
 		this->nextWriteElevation = elevation;
 		return OK_SUCCESS;
 	};
-
+	/* ステータス状態設定(文字列) */
 	/**
 	 * @brief Set the status of a multi-field update.
 	 * To record a status message on a write, call setStatus() then call writeFields(). Use status to provide additonal 
@@ -759,7 +761,7 @@ class ThingSpeakClass
 		this->nextWriteStatus = status;
 		return OK_SUCCESS;
 	};
-	
+	/* Twitterに投稿する */
 	/**
 	 * @brief Set the Twitter account and message to use for an update to be tweeted.
 	 * To send a message to twitter call setTwitterTweet() then call writeFields()
@@ -915,7 +917,7 @@ class ThingSpeakClass
 		
 		return OK_SUCCESS;	
 	};
-	
+	/* 時間設定 */
 	/**
 	 * @brief Set the created-at date of a multi-field update.
 	 * To record created-at of a write, call setField() for each of the fields you want to write, setCreatedAt(), and then call writeFields()
@@ -1000,7 +1002,7 @@ class ThingSpeakClass
 		return OK_SUCCESS;
 	}
 	
-
+	//マルチデータ書きこみ
 	/**
 	 * @brief Write a multi-field update.
 	 * Call setField() for each of the fields you want to write, setLatitude() / setLongitude() / setElevation(), and then call writeFields()
@@ -1238,6 +1240,7 @@ class ThingSpeakClass
 		return status;
 	};
 	
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the latest string from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1271,7 +1274,7 @@ class ThingSpeakClass
 		return readRaw(channelNumber, String(String("/fields/") + String(field) + String("/last")), readAPIKey);
 	}
 
-
+	//データ読み込み（公開）
 	/**
 	 * @brief Read the latest string from a public ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1291,7 +1294,7 @@ class ThingSpeakClass
 		return readStringField(channelNumber, field, NULL);
 	};
 
-
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the latest float from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1313,7 +1316,7 @@ class ThingSpeakClass
 		return convertStringToFloat(readStringField(channelNumber, field, readAPIKey));
 	};
 
-
+	//データ読み込み（公開）
 	/**
 	 * @brief Read the latest float from a public ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1334,7 +1337,7 @@ class ThingSpeakClass
 		return readFloatField(channelNumber, field, NULL);
 	};
 
-
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the latest long from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1356,7 +1359,7 @@ class ThingSpeakClass
 		return readStringField(channelNumber, field, readAPIKey).toInt();
 	}
 
-
+	//データ読み込み（公開）
 	/**
 	 * @brief Read the latest long from a public ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1376,7 +1379,7 @@ class ThingSpeakClass
 		return readLongField(channelNumber, field, NULL);
 	};
 
-
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the latest int from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1398,7 +1401,7 @@ class ThingSpeakClass
 		return readLongField(channelNumber, field, readAPIKey);
 	}
 
-
+	//データ読み込み（公開）
 	/**
 	 * @brief Read the latest int from a public ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1418,7 +1421,7 @@ class ThingSpeakClass
 	{
 		return readLongField(channelNumber, field, NULL);
 	};
-
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the latest status from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1443,7 +1446,7 @@ class ThingSpeakClass
 		
 		return getJSONValueByKey(content, "status");
 	};
-	
+	//データ読み込み（公開）
 		/**
 	 * @brief Read the latest status from a public ThingSpeak channel
 	 * @param channelNumber Channel number	
@@ -1461,7 +1464,7 @@ class ThingSpeakClass
 	{
 		return readStatus(channelNumber, NULL);
 	};
-	
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read the created-at timestamp associated with the latest update to a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1486,7 +1489,7 @@ class ThingSpeakClass
 		
 		return getJSONValueByKey(content, "created_at");
 	};
-
+	//データ読み込み（公開）
 	/**
 	 * @brief Read the created-at timestamp associated with the latest update to a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1504,7 +1507,7 @@ class ThingSpeakClass
 	{
 		return readCreatedAt(channelNumber, NULL);
 	};
-	
+	//データ読み込み（公開）
 	/**
 	 * @brief Read a raw response from a public ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1524,7 +1527,7 @@ class ThingSpeakClass
 	{
 		return readRaw(channelNumber, URLSuffix, NULL);
 	}
-	
+	//データ読み込み（非公開）
 	/**
 	 * @brief Read a raw response from a private ThingSpeak channel
 	 * @param channelNumber Channel number
@@ -1598,7 +1601,7 @@ class ThingSpeakClass
         // This is a workaround to a bug in the Spark implementation of String
     	return String("") + content;
 	};
-	
+	//データ読み込みサーバ応答取得
 	/**
 	 * @brief Get the status of the previous read.
 	 * @return Generally, these are HTTP status codes.  Negative values indicate an error generated by the library.
